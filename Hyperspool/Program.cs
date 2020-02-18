@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Hyperspool;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Hyperspool
+namespace HyperspoolIDE
 {
     internal static class Program
     {
