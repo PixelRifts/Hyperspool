@@ -29,6 +29,25 @@ namespace Hyperspool.Tests
             {
                 (SyntaxKind.IdentifierToken, "a"),
                 (SyntaxKind.IdentifierToken, "abc"),
+
+                (SyntaxKind.WhitespaceToken, ""),
+                (SyntaxKind.NumberToken, ""),
+                (SyntaxKind.EqualsToken, ""),
+                (SyntaxKind.PlusToken, ""),
+                (SyntaxKind.MinusToken, ""),
+                (SyntaxKind.StarToken, ""),
+                (SyntaxKind.SlashToken, ""),
+                (SyntaxKind.OpenParenthesisToken, ""),
+                (SyntaxKind.CloseParenthesisToken, ""),
+                (SyntaxKind.BangToken, ""),
+                (SyntaxKind.AmpersandAmpersandToken, ""),
+                (SyntaxKind.PipePipeToken, ""),
+                (SyntaxKind.EqualsEqualsToken, ""),
+                (SyntaxKind.BangEqualsToken, ""),
+                (SyntaxKind.IdentifierToken, ""),
+
+                (SyntaxKind.TrueKeyword, ""),
+                (SyntaxKind.FalseKeyword, ""),
             };
         }
     }
