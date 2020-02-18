@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Hyperspool
 {
-    internal sealed class Compilation
+    public sealed class Compilation
     {
         public Compilation(SyntaxTree _syntax)
         {
