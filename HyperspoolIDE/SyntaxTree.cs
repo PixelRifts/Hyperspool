@@ -16,10 +16,22 @@ namespace Hyperspool
         public ExpressionSyntax Root { get; }
         public SyntaxToken EndOfFileToken { get; }
 
-        public static SyntaxTree Parse(string line)
+        public static SyntaxTree Parse(string _line)
         {
-            Parser _p = new Parser(line);
+            Parser _p = new Parser(_line);
             return _p.Parse();
+        }
+
+        public static IEnumerable<SyntaxToken> ParseTokens(string _text)
+        {
+            Lexer _lexer = new Lexer(_text);
+            while (true)
+            {
+                var _token = _lexer.Lex();
+                if (_token.Kind == SyntaxKind.EndOfFileToken)
+                    break;
+                yield return _token;
+            }
         }
     }
 }
