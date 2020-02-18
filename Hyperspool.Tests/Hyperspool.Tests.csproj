@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hyperspool\Hyperspool.csproj" />
+    <ProjectReference Include="..\Hyperspool\HyperspoolIDE.csproj" />
   </ItemGroup>
 
 </Project>

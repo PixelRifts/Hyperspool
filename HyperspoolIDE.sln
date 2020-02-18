@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyperspool", "Hyperspool\Hyperspool.csproj", "{B8044E34-E46B-4541-B606-AF671993D770}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HyperspoolIDE", "Hyperspool\HyperspoolIDE.csproj", "{B8044E34-E46B-4541-B606-AF671993D770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyperspoolIDE", "HyperspoolIDE\HyperspoolIDE.csproj", "{EED11D38-7FCC-4B20-B606-70E90268FCF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyperspool", "HyperspoolIDE\Hyperspool.csproj", "{EED11D38-7FCC-4B20-B606-70E90268FCF2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyperspool.Tests", "Hyperspool.Tests\Hyperspool.Tests.csproj", "{9B23C6B6-789B-4C37-BD42-9DE9994D1D19}"
 EndProject

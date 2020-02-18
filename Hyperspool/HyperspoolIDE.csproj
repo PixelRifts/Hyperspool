@@ -3,12 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <ApplicationIcon />
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <StartupObject>Hyperspool.Program</StartupObject>
+    <RootNamespace>Hyperspool</RootNamespace>
+    <AssemblyName>HyperspoolIDE</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HyperspoolIDE\HyperspoolIDE.csproj" />
+    <ProjectReference Include="..\HyperspoolIDE\Hyperspool.csproj" />
   </ItemGroup>
 
 </Project>

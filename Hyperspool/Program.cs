@@ -1,12 +1,10 @@
-﻿using Hyperspool;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HyperspoolIDE
+namespace Hyperspool
 {
-    internal static class Program
+    public static class Program
     {
         private static void Main()
         {
