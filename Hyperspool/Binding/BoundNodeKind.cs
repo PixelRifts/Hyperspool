@@ -1,0 +1,11 @@
+﻿namespace Hyperspool
+{
+    internal enum BoundNodeKind
+    {
+        UnaryExpression,
+        LiteralExpression,
+        BinaryExpression,
+        VariableExpression,
+        AssignmentExpression
+    }
+}
