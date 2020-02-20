@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Hyperspool.Tests
 {
-    public class LexerTest
+    public class LexerTests
     {
         [Theory]
         [MemberData(nameof(GetTokensData))]

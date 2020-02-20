@@ -2,7 +2,7 @@
 
 namespace Hyperspool
 {
-    internal static class SyntaxFacts
+    public static class SyntaxFacts
     {
         public static int GetUnaryOperatorPrecedence(this SyntaxKind kind)
         {
@@ -38,7 +38,7 @@ namespace Hyperspool
             }
         }
 
-        internal static SyntaxKind GetKeywordKind(string text)
+        public static SyntaxKind GetKeywordKind(string text)
         {
             switch (text)
             {
@@ -46,6 +46,29 @@ namespace Hyperspool
                 case "false": return SyntaxKind.FalseKeyword;
                 default: return SyntaxKind.IdentifierToken;
             }
+        }
+
+        public static string GetText(SyntaxKind _kind)
+        {
+            switch (_kind)
+            {
+                case SyntaxKind.EqualsToken: return "=";
+                case SyntaxKind.PlusToken: return "+";
+                case SyntaxKind.MinusToken: return "-";
+                case SyntaxKind.StarToken: return "*";
+                case SyntaxKind.SlashToken: return "/";
+                case SyntaxKind.OpenParenthesisToken: return "(";
+                case SyntaxKind.CloseParenthesisToken: return ")";
+                case SyntaxKind.BangToken: return "!";
+                case SyntaxKind.AmpersandAmpersandToken: return "&&";
+                case SyntaxKind.PipePipeToken: return "||";
+                case SyntaxKind.EqualsEqualsToken: return "==";
+                case SyntaxKind.BangEqualsToken: return "!=";
+                case SyntaxKind.TrueKeyword: return "true";
+                case SyntaxKind.FalseKeyword: return "false";
+                default: return null;
+            }
+
         }
     }
 }
