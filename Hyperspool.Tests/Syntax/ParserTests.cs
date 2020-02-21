@@ -58,7 +58,6 @@ namespace Hyperspool.Tests
                 foreach (var _op2 in SyntaxFacts.GetBinaryOperatorKinds())
                 {
                     yield return new object[] { _op1, _op2 };
-                    yield break;
                 }
             }
         }
