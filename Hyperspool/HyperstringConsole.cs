@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Hyperspool
 {
-    public static class Program
+    public static class HyperstringConsole
     {
         private static void Main()
         {

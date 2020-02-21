@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Hyperspool.Tests.Syntax
+namespace Hyperspool.Tests
 {
     public class SyntaxFactTests
     {

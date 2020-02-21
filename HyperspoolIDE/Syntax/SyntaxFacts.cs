@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Hyperspool
 {
@@ -38,6 +39,26 @@ namespace Hyperspool
             }
         }
 
+        public static IEnumerable<SyntaxKind> GetUnaryOperatorKinds()
+        {
+            var _kinds = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
+            foreach (var _kind in _kinds)
+            {
+                if (GetUnaryOperatorPrecedence(_kind) > 0)
+                    yield return _kind;
+            }
+        }
+
+        public static IEnumerable<SyntaxKind> GetBinaryOperatorKinds()
+        {
+            var _kinds = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
+            foreach (var _kind in _kinds)
+            {
+                if (GetBinaryOperatorPrecedence(_kind) > 0)
+                    yield return _kind;
+            }
+        }
+
         public static SyntaxKind GetKeywordKind(string text)
         {
             switch (text)
@@ -68,7 +89,6 @@ namespace Hyperspool
                 case SyntaxKind.FalseKeyword: return "false";
                 default: return null;
             }
-
         }
     }
 }
