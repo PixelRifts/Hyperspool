@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -6,6 +7,22 @@ namespace Hyperspool.Tests
 {
     public class LexerTests
     {
+        [Fact]
+        public void Lexer_Lexes_AllTokens()
+        {
+            var _tokenKinds = Enum.GetValues(typeof(SyntaxKind))
+                               .Cast<SyntaxKind>()
+                               .Where(_k => _k.ToString().EndsWith("Keyword") || _k.ToString().EndsWith("Token"))
+                               .ToList();
+            var _testedTokenKinds = GetTokens().Concat(GetSeparators()).Select(_t => _t.Kind);
+            var _untestedTokenKinds = new SortedSet<SyntaxKind>(_tokenKinds);
+            _untestedTokenKinds.Remove(SyntaxKind.BadToken);
+            _untestedTokenKinds.Remove(SyntaxKind.EndOfFileToken);
+            _untestedTokenKinds.ExceptWith(_testedTokenKinds);
+
+            Assert.Empty(_untestedTokenKinds);
+        }
+
         [Theory]
         [MemberData(nameof(GetTokensData))]
         public void Lexer_Lexes_Token(SyntaxKind _kind, string _text)
@@ -84,27 +101,19 @@ namespace Hyperspool.Tests
 
         private static IEnumerable<(SyntaxKind Kind, string Text)> GetTokens()
         {
-            return new[]
+            var _fixed = Enum.GetValues(typeof(SyntaxKind))
+                            .Cast<SyntaxKind>()
+                            .Select(_k => (kind: _k, text: SyntaxFacts.GetText(_k)))
+                            .Where(_t => _t.text != null);
+            
+            var _dynamic = new[]
             {
-                (SyntaxKind.EqualsToken, "="),
-                (SyntaxKind.PlusToken, "+"),
-                (SyntaxKind.MinusToken, "-"),
-                (SyntaxKind.StarToken, "*"),
-                (SyntaxKind.SlashToken, "/"),
-                (SyntaxKind.OpenParenthesisToken, "("),
-                (SyntaxKind.CloseParenthesisToken, ")"),
-                (SyntaxKind.BangToken, "!"),
-                (SyntaxKind.AmpersandAmpersandToken, "&&"),
-                (SyntaxKind.PipePipeToken, "||"),
-                (SyntaxKind.EqualsEqualsToken, "=="),
-                (SyntaxKind.BangEqualsToken, "!="),
-                (SyntaxKind.TrueKeyword, "true"),
-                (SyntaxKind.FalseKeyword, "false"),
                 (SyntaxKind.IdentifierToken, "a"),
                 (SyntaxKind.IdentifierToken, "abc"),
                 (SyntaxKind.NumberToken, "1"),
                 (SyntaxKind.NumberToken, "123"),
             };
+            return _fixed.Concat(_dynamic);
         }
 
         private static IEnumerable<(SyntaxKind Kind, string Text)> GetSeparators()
@@ -113,9 +122,9 @@ namespace Hyperspool.Tests
             {
                 (SyntaxKind.WhitespaceToken, " "),
                 (SyntaxKind.WhitespaceToken, "  "),
-                (SyntaxKind.WhitespaceToken, "\n"),
-                (SyntaxKind.WhitespaceToken, "\t"),
                 (SyntaxKind.WhitespaceToken, "\r"),
+                (SyntaxKind.WhitespaceToken, "\n"),
+                (SyntaxKind.WhitespaceToken, "\r\n"),
             };
         }
 
