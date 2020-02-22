@@ -113,9 +113,9 @@ namespace Hyperspool.Tests
             {
                 (SyntaxKind.WhitespaceToken, " "),
                 (SyntaxKind.WhitespaceToken, "  "),
-                (SyntaxKind.WhitespaceToken, "\r"),
                 (SyntaxKind.WhitespaceToken, "\n"),
-                (SyntaxKind.WhitespaceToken, "\r\n"),
+                (SyntaxKind.WhitespaceToken, "\t"),
+                (SyntaxKind.WhitespaceToken, "\r"),
             };
         }
 
