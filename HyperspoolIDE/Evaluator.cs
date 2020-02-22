@@ -25,71 +25,83 @@ namespace Hyperspool
 
         private object EvaluateExpression(BoundExpression _node)
         {
-            if (_node is BoundLiteralExpression _n)
+            switch (_node.Kind)
             {
-                return _n.Value;
+                case BoundNodeKind.LiteralExpression:
+                    return EvaluateLiteralExpression((BoundLiteralExpression)_node);
+                case BoundNodeKind.VariableExpression:
+                    return EvaluateVariableExpression((BoundVariableExpression)_node);
+                case BoundNodeKind.AssignmentExpression:
+                    return EvaluateAssignmentExpression((BoundAssignmentExpression)_node);
+                case BoundNodeKind.UnaryExpression:
+                    return EvaluateUnaryExpression((BoundUnaryExpression)_node);
+                case BoundNodeKind.BinaryExpression:
+                    return EvaluateBinaryExpression((BoundBinaryExpression)_node);
+                default:
+                    throw new Exception($"Unexpected Node {_node.Kind}");
             }
+        }
+        private static object EvaluateLiteralExpression(BoundLiteralExpression _n)
+        {
+            return _n.Value;
+        }
 
-            if (_node is BoundVariableExpression _v)
+        private object EvaluateVariableExpression(BoundVariableExpression _v)
+        {
+            return variables[_v.Variable];
+        }
+
+        private object EvaluateAssignmentExpression(BoundAssignmentExpression _a)
+        {
+            var _value = EvaluateExpression(_a.Expression);
+            variables[_a.Variable] = _value;
+            return _value;
+        }
+
+        private object EvaluateUnaryExpression(BoundUnaryExpression _u)
+        {
+            var _operand = EvaluateExpression(_u.Operand);
+
+
+            switch (_u.Op.Kind)
             {
-                return variables[_v.Variable];
+                case BoundUnaryOperatorKind.Identity:
+                    return (int)_operand;
+                case BoundUnaryOperatorKind.Negation:
+                    return -(int)_operand;
+                case BoundUnaryOperatorKind.LogicalNegation:
+                    return !(bool)_operand;
+                default:
+                    throw new Exception($"Invalid Unary Operator {_u.Op}");
             }
+        }
 
-            if (_node is BoundAssignmentExpression _a)
+        private object EvaluateBinaryExpression(BoundBinaryExpression _b)
+        {
+            var _left = EvaluateExpression(_b.Left);
+            var _right = EvaluateExpression(_b.Right);
+
+            switch (_b.Op.Kind)
             {
-                var _value = EvaluateExpression(_a.Expression);
-                variables[_a.Variable] = _value;
-                return _value;
+                case BoundBinaryOperatorKind.Addition:
+                    return (int)_left + (int)_right;
+                case BoundBinaryOperatorKind.Subtraction:
+                    return (int)_left - (int)_right;
+                case BoundBinaryOperatorKind.Multiplication:
+                    return (int)_left * (int)_right;
+                case BoundBinaryOperatorKind.Division:
+                    return (int)_left / (int)_right;
+                case BoundBinaryOperatorKind.LogicalAnd:
+                    return (bool)_left && (bool)_right;
+                case BoundBinaryOperatorKind.LogicalOr:
+                    return (bool)_left || (bool)_right;
+                case BoundBinaryOperatorKind.Equals:
+                    return Equals(_left, _right);
+                case BoundBinaryOperatorKind.NotEquals:
+                    return !Equals(_left, _right);
+                default:
+                    throw new Exception($"Invalid Binary Operator {_b.Op}");
             }
-
-            if (_node is BoundUnaryExpression _u)
-            {
-                var _operand = EvaluateExpression(_u.Operand);
-
-
-                switch (_u.Op.Kind)
-                {
-                    case BoundUnaryOperatorKind.Identity:
-                        return (int)_operand;
-                    case BoundUnaryOperatorKind.Negation:
-                        return -(int)_operand;
-                    case BoundUnaryOperatorKind.LogicalNegation:
-                        return !(bool)_operand;
-                    default:
-                        throw new Exception($"Invalid Unary Operator {_u.Op}");
-                }
-            }
-
-            if (_node is BoundBinaryExpression _b)
-            {
-                var _left = EvaluateExpression(_b.Left);
-                var _right = EvaluateExpression(_b.Right);
-
-                switch (_b.Op.Kind)
-                {
-                    case BoundBinaryOperatorKind.Addition:
-                        return (int)_left + (int)_right;
-                    case BoundBinaryOperatorKind.Subtraction:
-                        return (int)_left - (int)_right;
-                    case BoundBinaryOperatorKind.Multiplication:
-                        return (int)_left * (int)_right;
-                    case BoundBinaryOperatorKind.Division:
-                        return (int)_left / (int)_right;
-                    case BoundBinaryOperatorKind.LogicalAnd:
-                        return (bool)_left && (bool)_right;
-                    case BoundBinaryOperatorKind.LogicalOr:
-                        return (bool)_left || (bool)_right;
-                    case BoundBinaryOperatorKind.Equals:
-                        return Equals(_left, _right);
-                    case BoundBinaryOperatorKind.NotEquals:
-                        return !Equals(_left, _right);
-                    default:
-                        throw new Exception($"Invalid Binary Operator {_b.Op}");
-                }
-            }
-
-
-            else throw new Exception($"Unexpected Node {_node.Kind}");
         }
     }
 }
