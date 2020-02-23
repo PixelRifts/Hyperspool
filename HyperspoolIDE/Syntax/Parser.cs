@@ -7,15 +7,8 @@ namespace Hyperspool
 
     internal sealed class Parser
     {
-
-
-
-
-
-
         private readonly SyntaxToken[] tokens;
         private int position;
-        private DiagnosticBag diagnostics = new DiagnosticBag();
 
         public Parser(string _text)
         {
@@ -33,19 +26,12 @@ namespace Hyperspool
             } while (_token.Kind != SyntaxKind.EndOfFileToken);
 
             tokens = _tokens.ToArray();
-            diagnostics.AddRange(_lexer.Diagnostics);
+            Diagnostics.AddRange(_lexer.Diagnostics);
         }
 
-
-
-
-
-        public DiagnosticBag Diagnostics => diagnostics;
+        public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
         private SyntaxToken Current => Peek(0);
         private SyntaxToken LookAhead => Peek(1);
-
-
-
 
         private SyntaxToken Peek(int _offset)
         {
@@ -64,21 +50,15 @@ namespace Hyperspool
         private SyntaxToken MatchToken(SyntaxKind _kind)
         {
             if (Current.Kind == _kind) return NextToken();
-            diagnostics.ReportUnexpectedToken(Current.Span, Current.Kind, _kind);
+            Diagnostics.ReportUnexpectedToken(Current.Span, Current.Kind, _kind);
             return new SyntaxToken(_kind, Current.Position, null, null);
         }
-
-
-
-
-
-
 
         public SyntaxTree Parse()
         {
             ExpressionSyntax expression = ParseExpression();
             SyntaxToken endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-            return new SyntaxTree(diagnostics, expression, endOfFileToken);
+            return new SyntaxTree(Diagnostics, expression, endOfFileToken);
         }
 
         private ExpressionSyntax ParseExpression() => ParseAssignmentExpression();
@@ -127,30 +107,45 @@ namespace Hyperspool
             switch (Current.Kind)
             {
                 case SyntaxKind.OpenParenthesisToken:
-                    var _left = NextToken();
-                    var _expression = ParseExpression();
-                    var _right = MatchToken(SyntaxKind.CloseParenthesisToken);
-                    return new ParenthesizedExpressionSyntax(_left, _expression, _right);
-                
+                    return ParseParenthesizedExpression();
 
                 case SyntaxKind.TrueKeyword:
                 case SyntaxKind.FalseKeyword:
-                    var _keywordToken = NextToken();
-                    bool _value = _keywordToken.Kind == SyntaxKind.TrueKeyword;
-                    return new LiteralExpressionSyntax(_keywordToken, _value);
+                    return ParseBooleanLiteral();
 
                 case SyntaxKind.IdentifierToken:
-                    var _identifierToken = NextToken();
-                    return new NameExpressionSyntax(_identifierToken);
+                    return ParseNameExpression();
+
+                default:
+                    return ParseNumberLiteral();
             }
+        }
+
+        private ExpressionSyntax ParseNumberLiteral()
+        {
             var _numberToken = MatchToken(SyntaxKind.NumberToken);
             return new LiteralExpressionSyntax(_numberToken);
         }
 
+        private ExpressionSyntax ParseParenthesizedExpression()
+        {
+            var _left = NextToken();
+            var _expression = ParseExpression();
+            var _right = MatchToken(SyntaxKind.CloseParenthesisToken);
+            return new ParenthesizedExpressionSyntax(_left, _expression, _right);
+        }
 
+        private ExpressionSyntax ParseBooleanLiteral()
+        {
+            var _keywordToken = NextToken();
+            bool _value = _keywordToken.Kind == SyntaxKind.TrueKeyword;
+            return new LiteralExpressionSyntax(_keywordToken, _value);
+        }
 
-
-
-
+        private ExpressionSyntax ParseNameExpression()
+        {
+            var _identifierToken = MatchToken(SyntaxKind.IdentifierToken);
+            return new NameExpressionSyntax(_identifierToken);
+        }
     }
 }
