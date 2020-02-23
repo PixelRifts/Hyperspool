@@ -1,7 +1,4 @@
-﻿
-using System.Collections.Generic;
-
-namespace Hyperspool
+﻿namespace Hyperspool
 {
     internal sealed class Lexer
     {
