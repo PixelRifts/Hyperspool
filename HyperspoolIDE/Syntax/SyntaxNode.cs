@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Hyperspool
@@ -6,6 +7,15 @@ namespace Hyperspool
     public abstract class SyntaxNode
     {
         public abstract SyntaxKind Kind { get; }
+        public virtual TextSpan Span
+        {
+            get
+            {
+                var _first = GetChildren().First().Span;
+                var _last = GetChildren().Last().Span;
+                return TextSpan.FromBounds(_first.Start, _last.End);
+            }
+        }
 
         public IEnumerable<SyntaxNode> GetChildren()
         {
