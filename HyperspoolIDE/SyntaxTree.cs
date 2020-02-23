@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Hyperspool
 {
     public sealed class SyntaxTree
     {
-        public SyntaxTree(IEnumerable<Diagnostic> _diagnostics, ExpressionSyntax _root, SyntaxToken _endOfFileToken)
+        public SyntaxTree(ImmutableArray<Diagnostic> _diagnostics, ExpressionSyntax _root, SyntaxToken _endOfFileToken)
         {
-            Diagnostics = _diagnostics.ToArray();
+            Diagnostics = _diagnostics;
             Root = _root;
             EndOfFileToken = _endOfFileToken;
         }
 
-        public IReadOnlyList<Diagnostic> Diagnostics { get; }
+        public ImmutableArray<Diagnostic> Diagnostics { get; }
         public ExpressionSyntax Root { get; }
         public SyntaxToken EndOfFileToken { get; }
 

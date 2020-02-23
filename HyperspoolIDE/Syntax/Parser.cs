@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text;
 
 namespace Hyperspool
@@ -7,7 +8,7 @@ namespace Hyperspool
 
     internal sealed class Parser
     {
-        private readonly SyntaxToken[] tokens;
+        private readonly ImmutableArray<SyntaxToken> tokens;
         private int position;
 
         public Parser(string _text)
@@ -25,7 +26,7 @@ namespace Hyperspool
                 }
             } while (_token.Kind != SyntaxKind.EndOfFileToken);
 
-            tokens = _tokens.ToArray();
+            tokens = _tokens.ToImmutableArray();
             Diagnostics.AddRange(_lexer.Diagnostics);
         }
 
@@ -58,7 +59,7 @@ namespace Hyperspool
         {
             ExpressionSyntax expression = ParseExpression();
             SyntaxToken endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-            return new SyntaxTree(Diagnostics, expression, endOfFileToken);
+            return new SyntaxTree(Diagnostics.ToImmutableArray(), expression, endOfFileToken);
         }
 
         private ExpressionSyntax ParseExpression() => ParseAssignmentExpression();
@@ -113,11 +114,12 @@ namespace Hyperspool
                 case SyntaxKind.FalseKeyword:
                     return ParseBooleanLiteral();
 
-                case SyntaxKind.IdentifierToken:
-                    return ParseNameExpression();
-
-                default:
+                case SyntaxKind.NumberToken:
                     return ParseNumberLiteral();
+
+                case SyntaxKind.IdentifierToken:
+                default:
+                    return ParseNameExpression();
             }
         }
 
@@ -129,7 +131,7 @@ namespace Hyperspool
 
         private ExpressionSyntax ParseParenthesizedExpression()
         {
-            var _left = NextToken();
+            var _left = MatchToken(SyntaxKind.OpenParenthesisToken);
             var _expression = ParseExpression();
             var _right = MatchToken(SyntaxKind.CloseParenthesisToken);
             return new ParenthesizedExpressionSyntax(_left, _expression, _right);
@@ -137,9 +139,9 @@ namespace Hyperspool
 
         private ExpressionSyntax ParseBooleanLiteral()
         {
-            var _keywordToken = NextToken();
-            bool _value = _keywordToken.Kind == SyntaxKind.TrueKeyword;
-            return new LiteralExpressionSyntax(_keywordToken, _value);
+            var _isTrue = Current.Kind == SyntaxKind.TrueKeyword;
+            var _keywordToken = _isTrue ? MatchToken(SyntaxKind.TrueKeyword) : MatchToken(SyntaxKind.FalseKeyword);
+            return new LiteralExpressionSyntax(_keywordToken, _isTrue);
         }
 
         private ExpressionSyntax ParseNameExpression()

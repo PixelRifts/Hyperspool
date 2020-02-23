@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Hyperspool
 {
     public sealed class EvaluationResult
     {
-        public EvaluationResult(IEnumerable<Diagnostic> _diagnostics, object _value)
+        public EvaluationResult(ImmutableArray<Diagnostic> _diagnostics, object _value)
         {
-            Diagnostics = _diagnostics.ToArray();
+            Diagnostics = _diagnostics;
             Value = _value;
         }
 
-        public IReadOnlyList<Diagnostic> Diagnostics { get; }
+        public ImmutableArray<Diagnostic> Diagnostics { get; }
         public object Value { get; }
     }
 }
