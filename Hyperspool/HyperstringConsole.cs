@@ -60,9 +60,15 @@ namespace Hyperspool
                 }
                 else
                 {
+                    var text = syntaxTree.Text;
                     foreach (var diag in diagnostics)
                     {
+                        var lineindex = text.GetLineIndex(diag.Span.Start);
+                        var linenumber = lineindex + 1;
+                        var character = diag.Span.Start - text.Lines[lineindex].Start + 1;
+
                         Console.WriteLine();
+                        ConsoleWrite($"({linenumber}, {character}): ", ConsoleColor.Red);
                         ConsoleWriteLine(diag, ConsoleColor.DarkRed);
 
                         var prefix = line.Substring(0, diag.Span.Start);

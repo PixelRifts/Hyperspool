@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hyperspool
+﻿namespace Hyperspool
 {
     public struct TextSpan
     {
@@ -19,17 +17,5 @@ namespace Hyperspool
             var _length = _end - _start;
             return new TextSpan(_start, _length);
         }
-    }
-
-    public sealed class VariableSymbol
-    {
-        internal VariableSymbol(string _name, Type _type)
-        {
-            Name = _name;
-            Type = _type;
-        }
-
-        public string Name { get; }
-        public Type Type { get; }
     }
 }

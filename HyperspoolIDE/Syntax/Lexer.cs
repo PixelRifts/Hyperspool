@@ -2,14 +2,14 @@
 {
     internal sealed class Lexer
     {
-        private readonly string text;
+        private readonly SourceText text;
         private int position;
 
         private int start;
         private SyntaxKind kind;
         private object value;
 
-        public Lexer(string _text)
+        public Lexer(SourceText _text)
         {
             text = _text;
         }
@@ -134,7 +134,7 @@
             int _length = position - start;
             string _text = SyntaxFacts.GetText(kind);
             if (_text == null)
-                _text = text.Substring(start, _length);
+                _text = text.ToString(start, _length);
             return new SyntaxToken(kind, start, _text, value);
         }
 
@@ -143,7 +143,7 @@
             while (char.IsLetter(Current))
                 position++;
             int _length = position - start;
-            string _text = text.Substring(start, _length);
+            string _text = text.ToString(start, _length);
             kind = SyntaxFacts.GetKeywordKind(_text);
         }
 
@@ -159,9 +159,9 @@
             while (char.IsDigit(Current))
                 position++;
             var _length = position - start;
-            var _text = text.Substring(start, _length);
+            var _text = text.ToString(start, _length);
             if (!int.TryParse(_text, out int _value))
-                Diagnostics.ReportInvalidNumber(new TextSpan(start, _length), text, typeof(int));
+                Diagnostics.ReportInvalidNumber(new TextSpan(start, _length), _text, typeof(int));
             kind = SyntaxKind.NumberToken;
             value = _value;
         }

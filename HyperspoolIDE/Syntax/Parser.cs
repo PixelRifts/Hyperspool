@@ -7,9 +7,10 @@ namespace Hyperspool
     internal sealed class Parser
     {
         private readonly ImmutableArray<SyntaxToken> tokens;
+        private readonly SourceText text;
         private int position;
 
-        public Parser(string _text)
+        public Parser(SourceText _text)
         {
             List<SyntaxToken> _tokens = new List<SyntaxToken>();
 
@@ -26,6 +27,7 @@ namespace Hyperspool
 
             tokens = _tokens.ToImmutableArray();
             Diagnostics.AddRange(_lexer.Diagnostics);
+            text = _text;
         }
 
         public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
@@ -57,7 +59,7 @@ namespace Hyperspool
         {
             ExpressionSyntax expression = ParseExpression();
             SyntaxToken endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-            return new SyntaxTree(Diagnostics.ToImmutableArray(), expression, endOfFileToken);
+            return new SyntaxTree(text, Diagnostics.ToImmutableArray(), expression, endOfFileToken);
         }
 
         private ExpressionSyntax ParseExpression() => ParseAssignmentExpression();
