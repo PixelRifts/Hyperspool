@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -33,6 +34,41 @@ namespace Hyperspool
                     foreach (var _child in _children)
                         yield return _child;
                 }
+            }
+        }
+
+        public void WriteTo(TextWriter _writer) => PrettyPrint(_writer, this);
+        
+        private static void PrettyPrint(TextWriter _writer, SyntaxNode _node, string _indent = "", bool isLast = true)
+        {
+            var _marker = isLast ? "└──" : "├──";
+
+            _writer.Write(_indent);
+            _writer.Write(_marker);
+            _writer.Write(_node.Kind);
+
+            if (_node is SyntaxToken _t && _t.Value != null)
+            {
+                _writer.Write(" ");
+                _writer.Write(_t.Value);
+            }
+            _writer.WriteLine();
+
+            _indent += isLast ? "    " : "│   ";
+            var _lastChild = _node.GetChildren().LastOrDefault();
+
+            foreach (var _child in _node.GetChildren())
+            {
+                PrettyPrint(_writer, _child, _indent, _child == _lastChild);
+            }
+        }
+
+        public override string ToString()
+        {
+            using (var _writer = new StringWriter())
+            {
+                WriteTo(_writer);
+                return _writer.ToString();
             }
         }
     }

@@ -50,7 +50,7 @@ namespace Hyperspool
                 if (showtree)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    PrettyPrint(syntaxTree.Root);
+                    syntaxTree.Root.WriteTo(Console.Out);
                     Console.ResetColor();
                 }
 
@@ -95,31 +95,6 @@ namespace Hyperspool
             Console.ForegroundColor = _color;
             Console.WriteLine(_text);
             Console.ResetColor();
-        }                                                                                            
-
-
-        static void PrettyPrint(SyntaxNode _node, string _indent = "", bool isLast = true)
-        {
-            var _marker = isLast ? "└──" : "├──";
-
-            Console.Write(_indent);
-            Console.Write(_marker);
-            Console.Write(_node.Kind);
-
-            if (_node is SyntaxToken _t && _t.Value != null)
-            {
-                Console.Write(" ");
-                Console.Write(_t.Value);
-            }
-            Console.WriteLine();
-
-            _indent += isLast ? "    " : "│   ";
-            var _lastChild = _node.GetChildren().LastOrDefault();
-
-            foreach (var _child in _node.GetChildren())
-            {
-                PrettyPrint(_child, _indent, _child == _lastChild);
-            }
         }
     }
 }
