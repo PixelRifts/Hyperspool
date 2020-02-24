@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Hyperspool
 {
@@ -10,38 +11,57 @@ namespace Hyperspool
         {
             bool showtree = false;
             var variables = new Dictionary<VariableSymbol, object>();
+            var textBuilder = new StringBuilder();
 
             while (true)
             {
-                Console.Write("> ");
-                var line = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(line)) return;
+                if (textBuilder.Length == 0)
+                    Console.Write("> ");
+                else
+                    Console.Write("| ");
 
-                switch (line)
+                var input = Console.ReadLine();
+
+                var isBlank = string.IsNullOrWhiteSpace(input);
+
+                if (textBuilder.Length == 0)
                 {
-                    case "#tree":
-                        showtree = !showtree;
-                        ConsoleWriteLine(showtree ? "Showing Parse trees" : "Stopped showing Parse trees", ConsoleColor.Magenta);
-                        continue;
-                    case "#cls":
-                        Console.Clear();
-                        continue;
-                    case "#mem":
-                        Console.WriteLine();
-                        if (!variables.Any()) ConsoleWriteLine("No Variable Stored in Memory", ConsoleColor.Magenta);
-
-                        foreach (var variable in variables.Keys)
+                    if (isBlank)
+                        break;
+                    else
+                    {
+                        switch (input)
                         {
-                            ConsoleWrite(variable.Name, ConsoleColor.Yellow);
-                            ConsoleWrite(" = ", ConsoleColor.Gray);
-                            ConsoleWrite(variables.GetValueOrDefault(variable), ConsoleColor.DarkGreen);
-                            Console.WriteLine();
-                        }
-                        Console.WriteLine();
-                        continue;
-                }
+                            case "#tree":
+                                showtree = !showtree;
+                                ConsoleWriteLine(showtree ? "Showing Parse trees" : "Stopped showing Parse trees", ConsoleColor.Magenta);
+                                continue;
+                            case "#cls":
+                                Console.Clear();
+                                continue;
+                            case "#mem":
+                                Console.WriteLine();
+                                if (!variables.Any()) ConsoleWriteLine("No Variable Stored in Memory", ConsoleColor.Magenta);
 
-                var syntaxTree = SyntaxTree.Parse(line);
+                                foreach (var variable in variables.Keys)
+                                {
+                                    ConsoleWrite(variable.Name, ConsoleColor.Yellow);
+                                    ConsoleWrite(" = ", ConsoleColor.Gray);
+                                    ConsoleWrite(variables.GetValueOrDefault(variable), ConsoleColor.DarkGreen);
+                                    Console.WriteLine();
+                                }
+                                Console.WriteLine();
+                                continue;
+                        }
+                    }
+                }
+                textBuilder.AppendLine(input);
+                var text = textBuilder.ToString();
+
+                var syntaxTree = SyntaxTree.Parse(text);
+                if (!isBlank && syntaxTree.Diagnostics.Any())
+                    continue;
+
                 Compilation compilation = new Compilation(syntaxTree);
                 var result = compilation.Evaluate(variables);
 
@@ -60,20 +80,23 @@ namespace Hyperspool
                 }
                 else
                 {
-                    var text = syntaxTree.Text;
                     foreach (var diag in diagnostics)
                     {
-                        var lineindex = text.GetLineIndex(diag.Span.Start);
+                        var lineindex = syntaxTree.Text.GetLineIndex(diag.Span.Start);
+                        var line = syntaxTree.Text.Lines[lineindex];
                         var linenumber = lineindex + 1;
-                        var character = diag.Span.Start - text.Lines[lineindex].Start + 1;
+                        var character = diag.Span.Start - line.Start + 1;
 
                         Console.WriteLine();
                         ConsoleWrite($"({linenumber}, {character}): ", ConsoleColor.Red);
                         ConsoleWriteLine(diag, ConsoleColor.DarkRed);
 
-                        var prefix = line.Substring(0, diag.Span.Start);
-                        var error = line.Substring(diag.Span.Start, diag.Span.Length);
-                        var suffix = line.Substring(diag.Span.End);
+                        var prefixSpan = TextSpan.FromBounds(line.Start, diag.Span.Start);
+                        var suffixSpan = TextSpan.FromBounds(diag.Span.End, line.End);
+
+                        var prefix = syntaxTree.Text.ToString(prefixSpan);
+                        var error = syntaxTree.Text.ToString(diag.Span.Start, diag.Span.Length);
+                        var suffix = syntaxTree.Text.ToString(suffixSpan);
 
                         Console.Write("    ");
                         Console.Write(prefix);
@@ -84,6 +107,7 @@ namespace Hyperspool
                     }
                     Console.WriteLine();
                 }
+                textBuilder.Clear();
             }
         }
 
