@@ -58,7 +58,7 @@ namespace Hyperspool
                     _lineStart = _position;
                 }
             }
-            if (_position > _lineStart)
+            if (_position >= _lineStart)
             {
                 AddLine(_result, _sourceText, _position, _lineStart, 0);
             }

@@ -52,6 +52,12 @@ namespace Hyperspool
                                 }
                                 Console.WriteLine();
                                 continue;
+                            case "#clrmem":
+                                Console.WriteLine();
+                                variables.Clear();
+                                ConsoleWriteLine("Cleared All Variables from memory", ConsoleColor.Magenta);
+                                Console.WriteLine();
+                                continue;
                         }
                     }
                 }
