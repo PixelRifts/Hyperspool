@@ -14,7 +14,7 @@ namespace Hyperspool.Tests
             var _op1Text = SyntaxFacts.GetText(_op1);
             var _op2Text = SyntaxFacts.GetText(_op2);
             var _text = $"a {_op1Text} b {_op2Text} c";
-            var _expression = SyntaxTree.Parse(_text).Root;
+            var _expression = ParseExpression(_text);
 
             if (_op1Precedence >= _op2Precedence)
             {
@@ -59,7 +59,7 @@ namespace Hyperspool.Tests
             var _unaryText = SyntaxFacts.GetText(_unaryKind);
             var _binaryText = SyntaxFacts.GetText(_binaryKind);
             var _text = $"{_unaryText} a {_binaryText} b";
-            var _expression = SyntaxTree.Parse(_text).Root;
+            var _expression = ParseExpression(_text);
 
             if (_unaryPrecedence >= _binaryPrecedence)
             {
@@ -89,6 +89,13 @@ namespace Hyperspool.Tests
                     _e.AssertToken(SyntaxKind.IdentifierToken, "b");
                 }
             }
+        }
+
+        private static ExpressionSyntax ParseExpression(string _text)
+        {
+            var _syntaxTree = SyntaxTree.Parse(_text);
+            CompilationUnitSyntax _root = _syntaxTree.Root;
+            return _root.Expression;
         }
 
         public static IEnumerable<object[]> GetUnaryOperatorPairsData()
