@@ -59,5 +59,11 @@ namespace Hyperspool
             var _msg = $"ERROR: Binary Operator '{_operatorText}' is not defined for types {_leftType} and {_rightType}.";
             Report(_span, _msg);
         }
+
+        internal void ReportVariableAlreadyDeclared(TextSpan _span, string _name)
+        {
+            var _msg = $"ERROR: Variable {_name} already declared";
+            Report(_span, _msg);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -14,6 +15,7 @@ namespace Hyperspool
             bool showtree = false;
             var variables = new Dictionary<VariableSymbol, object>();
             var textBuilder = new StringBuilder();
+            Compilation previous = null;
 
             while (true)
             {
@@ -93,21 +95,20 @@ namespace Hyperspool
                 if (!isBlank && syntaxTree.Diagnostics.Any())
                     continue;
 
-                Compilation compilation = new Compilation(syntaxTree);
+                Compilation compilation = previous == null ? new Compilation(syntaxTree) : previous.ContinueWith(syntaxTree);
                 var result = compilation.Evaluate(variables);
 
                 var diagnostics = result.Diagnostics;
 
                 if (showtree)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    syntaxTree.Root.WriteTo(Console.Out);
-                    Console.ResetColor();
+                    WriteSyntaxTreeTo(syntaxTree, Console.Out, ConsoleColor.DarkGray);
                 }
 
                 if (!diagnostics.Any())
                 {
                     ConsoleWriteLine(result.Value, ConsoleColor.Green);
+                    previous = compilation;
                 }
                 else
                 {
@@ -148,6 +149,13 @@ namespace Hyperspool
         {
             Console.ForegroundColor = _color;
             Console.Write(_text);
+            Console.ResetColor();
+        }
+
+        static void WriteSyntaxTreeTo(SyntaxTree _tree, TextWriter _writer, ConsoleColor _color)
+        {
+            Console.ForegroundColor = _color;
+            _tree.Root.WriteTo(Console.Out);
             Console.ResetColor();
         }
 

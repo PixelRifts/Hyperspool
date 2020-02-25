@@ -1,28 +1,55 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 namespace Hyperspool
 {
     public sealed class Compilation
     {
-        public Compilation(SyntaxTree _syntax)
+        private BoundGlobalScope globalScope;
+
+        public Compilation(SyntaxTree _syntaxTree)
+            : this(null, _syntaxTree)
         {
-            Syntax = _syntax;
         }
 
-        public SyntaxTree Syntax { get; }
+        public Compilation(Compilation previous, SyntaxTree _syntaxTree)
+        {
+            Previous = previous;
+            SyntaxTree = _syntaxTree;
+        }
+
+        public Compilation Previous { get; }
+        public SyntaxTree SyntaxTree { get; }
+
+        internal BoundGlobalScope GlobalScope
+        {
+            get
+            {
+                if (globalScope == null)
+                {
+                    var _globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree.Root);
+                    Interlocked.CompareExchange(ref globalScope, _globalScope, null);
+                }
+
+                return globalScope;
+            }
+        }
+
+        public Compilation ContinueWith(SyntaxTree _syntaxTree)
+        {
+            return new Compilation(this, _syntaxTree);
+        }
 
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> _variables)
         {
-            Binder _binder = new Binder(_variables);
-            var _boundExpression = _binder.BindExpression(Syntax.Root.Expression);
-            var _diagnostics = Syntax.Diagnostics.Concat(_binder.Diagnostics).ToImmutableArray();
+            var _diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
 
             if (_diagnostics.Any())
                 return new EvaluationResult(_diagnostics, null);
             
-            Evaluator _evaluator = new Evaluator(_boundExpression, _variables);
+            Evaluator _evaluator = new Evaluator(GlobalScope.Expression, _variables);
             var value = _evaluator.Evaluate();
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }

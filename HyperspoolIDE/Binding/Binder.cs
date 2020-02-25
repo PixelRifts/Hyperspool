@@ -1,26 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
 namespace Hyperspool
 {
-
     internal sealed class Binder
     {
-        private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-        private readonly Dictionary<VariableSymbol, object> variables;
+        private BoundScope scope;
 
-        public Binder(Dictionary<VariableSymbol, object> _variables)
+        public Binder(BoundScope _parent)
         {
-            variables = _variables;
+            scope = new BoundScope(_parent);
         }
 
-        public DiagnosticBag Diagnostics => diagnostics;
+        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope _previous, CompilationUnitSyntax _syntax)
+        {
+            var _parentScope = CreateParentScopes(_previous);
+            var _binder = new Binder(_parentScope);
+            var _expression = _binder.BindExpression(_syntax.Expression);
+            var _variables = _binder.scope.GetDeclaredVariables();
+            var _diagnostics = _binder.Diagnostics.ToImmutableArray();
 
+            if (_previous != null)
+                _diagnostics = _diagnostics.InsertRange(0, _previous.Diagnostics);
 
+            return new BoundGlobalScope(_previous, _diagnostics, _variables, _expression);
+        }
 
+        private static BoundScope CreateParentScopes(BoundGlobalScope _previous)
+        {
+            var _stack = new Stack<BoundGlobalScope>();
+            while (_previous != null)
+            {
+                _stack.Push(_previous);
+                _previous = _previous.Previous;
+            }
 
+            BoundScope _parent = null;
+
+            while (_stack.Count > 0)
+            {
+                _previous = _stack.Pop();
+                var _scope = new BoundScope(_parent);
+                foreach (var _v in _previous.Variables)
+                    _scope.TryDeclare(_v);
+                _parent = _scope;
+            }
+
+            return _parent;
+        }
+
+        public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
 
         public BoundExpression BindExpression(ExpressionSyntax _syntax)
         {
@@ -40,10 +72,9 @@ namespace Hyperspool
         {
             var _name = _syntax.IdentifierToken.Text;
 
-            var _variable = variables.Keys.FirstOrDefault(v => v.Name == _name);
-            if (_variable == null)
+            if (!scope.TryLookup(_name, out var _variable))
             {
-                diagnostics.ReportUndefinedName(_syntax.IdentifierToken.Span, _name);
+                Diagnostics.ReportUndefinedName(_syntax.IdentifierToken.Span, _name);
                 return new BoundLiteralExpression(0);
             }
             var _type = _variable.GetType();
@@ -54,11 +85,12 @@ namespace Hyperspool
         {
             var _boundExpression = BindExpression(_syntax.Expression);
             string _name = _syntax.IdentifierToken.Text;
-
-            var _existingVariable = variables.Keys.FirstOrDefault(v => v.Name == _name);
-            if (_existingVariable != null) variables.Remove(_existingVariable);
             var _variable = new VariableSymbol(_name, _boundExpression.Type);
-            variables[_variable] = null;
+
+            if (!scope.TryDeclare(_variable))
+            {
+                Diagnostics.ReportVariableAlreadyDeclared(_syntax.IdentifierToken.Span, _name);
+            }
 
             return new BoundAssignmentExpression(_variable, _boundExpression);
         }
@@ -75,12 +107,11 @@ namespace Hyperspool
             var _boundOperator = BoundUnaryOperator.Bind(_syntax.OperatorToken.Kind, _boundOperand.Type);
             if (_boundOperator == null)
             {
-                diagnostics.ReportUndefinedUnaryOperator(_syntax.OperatorToken.Span, _syntax.OperatorToken.Text, _boundOperand.Type);
+                Diagnostics.ReportUndefinedUnaryOperator(_syntax.OperatorToken.Span, _syntax.OperatorToken.Text, _boundOperand.Type);
                 return _boundOperand;
             }
             return new BoundUnaryExpression(_boundOperator, _boundOperand);
         }
-
 
         private BoundExpression BindBinaryExpression(BinaryExpressionSyntax _syntax)
         {
@@ -89,7 +120,7 @@ namespace Hyperspool
             var _boundOperator = BoundBinaryOperator.Bind(_syntax.OperatorToken.Kind, _boundLeft.Type, _boundRight.Type);
             if (_boundOperator == null)
             {
-                diagnostics.ReportUndefinedBinaryOperator(_syntax.OperatorToken.Span, _syntax.OperatorToken.Text, _boundLeft.Type, _boundRight.Type);
+                Diagnostics.ReportUndefinedBinaryOperator(_syntax.OperatorToken.Span, _syntax.OperatorToken.Text, _boundLeft.Type, _boundRight.Type);
                 return _boundLeft;
             }
             return new BoundBinaryExpression(_boundLeft, _boundOperator, _boundRight);
