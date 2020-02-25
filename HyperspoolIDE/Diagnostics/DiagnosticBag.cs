@@ -50,7 +50,7 @@ namespace Hyperspool
 
         public void ReportUndefinedName(TextSpan _span, string _name)
         {
-            var _msg = $"ERROR: Variable {_name} doesn't exist";
+            var _msg = $"ERROR: Variable '{_name}' doesn't exist";
             Report(_span, _msg);
         }
 
@@ -60,9 +60,9 @@ namespace Hyperspool
             Report(_span, _msg);
         }
 
-        internal void ReportVariableAlreadyDeclared(TextSpan _span, string _name)
+        public void ReportCannotConvert(TextSpan _span, Type _fromType, Type _toType)
         {
-            var _msg = $"ERROR: Variable {_name} already declared";
+            var _msg = $"ERROR: Cannot convert type '{_fromType}' to '{_toType}'";
             Report(_span, _msg);
         }
     }

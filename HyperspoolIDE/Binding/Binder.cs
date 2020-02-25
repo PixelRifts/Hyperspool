@@ -85,11 +85,17 @@ namespace Hyperspool
         {
             var _boundExpression = BindExpression(_syntax.Expression);
             string _name = _syntax.IdentifierToken.Text;
-            var _variable = new VariableSymbol(_name, _boundExpression.Type);
 
-            if (!scope.TryDeclare(_variable))
+            if (!scope.TryLookup(_name, out var _variable))
             {
-                Diagnostics.ReportVariableAlreadyDeclared(_syntax.IdentifierToken.Span, _name);
+                _variable = new VariableSymbol(_name, _boundExpression.Type);
+                scope.TryDeclare(_variable);
+            }
+
+            if (_boundExpression.Type != _variable.Type)
+            {
+                Diagnostics.ReportCannotConvert(_syntax.Expression.Span, _boundExpression.Type, _variable.Type);
+                return _boundExpression;
             }
 
             return new BoundAssignmentExpression(_variable, _boundExpression);
