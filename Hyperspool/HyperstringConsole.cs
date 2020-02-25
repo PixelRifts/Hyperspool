@@ -10,7 +10,7 @@ namespace Hyperspool
     {
         private static void Main()
         {
-            ConsoleWriteLine("type '#help' for all pseudo-commands", ConsoleColor.Magenta);
+            ConsoleWriteLine("Type '#help' for all pseudo-commands", ConsoleColor.Magenta);
 
             bool showtree = false;
             var variables = new Dictionary<VariableSymbol, object>();
