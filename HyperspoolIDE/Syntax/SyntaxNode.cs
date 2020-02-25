@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -41,10 +42,18 @@ namespace Hyperspool
         
         private static void PrettyPrint(TextWriter _writer, SyntaxNode _node, string _indent = "", bool isLast = true)
         {
+            var _isToConsole = _writer == Console.Out;
             var _marker = isLast ? "└──" : "├──";
 
             _writer.Write(_indent);
+
+            if (_isToConsole)
+                Console.ForegroundColor = ConsoleColor.DarkGray;
             _writer.Write(_marker);
+            Console.ResetColor();
+
+            if (_isToConsole)
+                Console.ForegroundColor = _node is SyntaxToken ? ConsoleColor.Cyan : ConsoleColor.Blue;
             _writer.Write(_node.Kind);
 
             if (_node is SyntaxToken _t && _t.Value != null)
@@ -53,6 +62,8 @@ namespace Hyperspool
                 _writer.Write(_t.Value);
             }
             _writer.WriteLine();
+            if (_isToConsole)
+                Console.ResetColor();
 
             _indent += isLast ? "    " : "│   ";
             var _lastChild = _node.GetChildren().LastOrDefault();

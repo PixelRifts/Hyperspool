@@ -9,6 +9,8 @@ namespace Hyperspool
     {
         private static void Main()
         {
+            ConsoleWriteLine("type '#help' for all pseudo-commands", ConsoleColor.Magenta);
+
             bool showtree = false;
             var variables = new Dictionary<VariableSymbol, object>();
             var textBuilder = new StringBuilder();
@@ -16,9 +18,9 @@ namespace Hyperspool
             while (true)
             {
                 if (textBuilder.Length == 0)
-                    Console.Write("> ");
+                    ConsoleWrite("» ", ConsoleColor.Green);
                 else
-                    Console.Write("| ");
+                    ConsoleWrite("· ", ConsoleColor.Green);
 
                 var input = Console.ReadLine();
 
@@ -32,13 +34,35 @@ namespace Hyperspool
                     {
                         switch (input)
                         {
+                            case "#help":
+                                Console.WriteLine();
+                                ConsoleWrite("#tree: ", ConsoleColor.Yellow);
+                                ConsoleWrite("Toggles showing of Parse Trees", ConsoleColor.DarkGreen);
+                                Console.WriteLine();
+                                ConsoleWrite("#cls: ", ConsoleColor.Yellow);
+                                ConsoleWrite("Clears screen", ConsoleColor.DarkGreen);
+                                Console.WriteLine();
+                                ConsoleWrite("#mem: ", ConsoleColor.Yellow);
+                                ConsoleWrite("Shows variables stored in memory and their values", ConsoleColor.DarkGreen);
+                                Console.WriteLine();
+                                ConsoleWrite("#clrmem: ", ConsoleColor.Yellow);
+                                ConsoleWrite("Clears all variables stored in memory and their values", ConsoleColor.DarkGreen);
+                                Console.WriteLine();
+
+                                Console.WriteLine();
+                                continue;
+
                             case "#tree":
+                                Console.WriteLine();
                                 showtree = !showtree;
                                 ConsoleWriteLine(showtree ? "Showing Parse trees" : "Stopped showing Parse trees", ConsoleColor.Magenta);
+                                Console.WriteLine();
                                 continue;
+
                             case "#cls":
                                 Console.Clear();
                                 continue;
+
                             case "#mem":
                                 Console.WriteLine();
                                 if (!variables.Any()) ConsoleWriteLine("No Variable Stored in Memory", ConsoleColor.Magenta);
@@ -52,6 +76,7 @@ namespace Hyperspool
                                 }
                                 Console.WriteLine();
                                 continue;
+
                             case "#clrmem":
                                 Console.WriteLine();
                                 variables.Clear();
