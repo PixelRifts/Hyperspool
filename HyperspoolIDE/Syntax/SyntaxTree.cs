@@ -5,18 +5,20 @@ namespace Hyperspool
 {
     public sealed class SyntaxTree
     {
-        public SyntaxTree(SourceText _text, ImmutableArray<Diagnostic> _diagnostics, ExpressionSyntax _root, SyntaxToken _endOfFileToken)
+        private SyntaxTree(SourceText _text)
         {
+            Parser _p = new Parser(_text);
+            var _root = _p.ParseCompilationUnit();
+            var _diagnostics = _p.Diagnostics.ToImmutableArray();
+
             Text = _text;
             Diagnostics = _diagnostics;
             Root = _root;
-            EndOfFileToken = _endOfFileToken;
         }
 
         public SourceText Text { get; }
         public ImmutableArray<Diagnostic> Diagnostics { get; }
-        public ExpressionSyntax Root { get; }
-        public SyntaxToken EndOfFileToken { get; }
+        public CompilationUnitSyntax Root { get; }
 
         public static SyntaxTree Parse(string _text)
         {
@@ -26,8 +28,7 @@ namespace Hyperspool
 
         public static SyntaxTree Parse(SourceText _text)
         {
-            Parser _p = new Parser(_text);
-            return _p.Parse();
+            return new SyntaxTree(_text);
         }
 
         public static IEnumerable<SyntaxToken> ParseTokens(string _text)

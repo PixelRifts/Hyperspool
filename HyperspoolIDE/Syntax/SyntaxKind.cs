@@ -32,5 +32,8 @@
         // Keywords
         TrueKeyword,
         FalseKeyword,
+
+        //Misc
+        CompilationUnit,
     }
 }

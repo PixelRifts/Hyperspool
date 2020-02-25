@@ -16,7 +16,7 @@ namespace Hyperspool
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> _variables)
         {
             Binder _binder = new Binder(_variables);
-            var _boundExpression = _binder.BindExpression(Syntax.Root);
+            var _boundExpression = _binder.BindExpression(Syntax.Root.Expression);
             var _diagnostics = Syntax.Diagnostics.Concat(_binder.Diagnostics).ToImmutableArray();
 
             if (_diagnostics.Any())
