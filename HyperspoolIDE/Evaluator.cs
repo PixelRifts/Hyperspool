@@ -5,22 +5,47 @@ namespace Hyperspool
 {
     internal sealed class Evaluator
     {
-        private readonly BoundExpression root;
+        private readonly BoundStatement root;
         private readonly Dictionary<VariableSymbol, object> variables;
 
+        private object lastValue;
 
-        public Evaluator(BoundExpression _root, Dictionary<VariableSymbol, object> _variables)
+        public Evaluator(BoundStatement _root, Dictionary<VariableSymbol, object> _variables)
         {
             root = _root;
             variables = _variables;
         }
 
-
-
-
         public object Evaluate()
         {
-            return EvaluateExpression(root);
+            EvaluateStatement(root);
+            return lastValue;
+        }
+
+        private void EvaluateStatement(BoundStatement _node)
+        {
+            switch (_node.Kind)
+            {
+                case BoundNodeKind.BlockStatement:
+                    EvaluateBlockStatement((BoundBlockStatement)_node);
+                    break;
+                case BoundNodeKind.ExpressionStatement:
+                    EvaluateExpressionStatement((BoundExpressionStatement)_node);
+                    break;
+                default:
+                    throw new Exception($"Unexpected Node {_node.Kind}");
+            }
+        }
+
+        private void EvaluateExpressionStatement(BoundExpressionStatement _node)
+        {
+            lastValue = EvaluateExpression(_node.Expression);
+        }
+
+        private void EvaluateBlockStatement(BoundBlockStatement _node)
+        {
+            foreach (var _statement in _node.Statements)
+                EvaluateStatement(_statement);
         }
 
         private object EvaluateExpression(BoundExpression _node)
@@ -41,6 +66,7 @@ namespace Hyperspool
                     throw new Exception($"Unexpected Node {_node.Kind}");
             }
         }
+
         private static object EvaluateLiteralExpression(BoundLiteralExpression _n)
         {
             return _n.Value;

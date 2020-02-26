@@ -94,8 +94,9 @@ namespace Hyperspool.Tests
         private static ExpressionSyntax ParseExpression(string _text)
         {
             var _syntaxTree = SyntaxTree.Parse(_text);
-            CompilationUnitSyntax _root = _syntaxTree.Root;
-            return _root.Expression;
+            var _root = _syntaxTree.Root;
+            var _statement  = _root.Statement;
+            return Assert.IsType<ExpressionStatementSyntax>(_statement).Expression;
         }
 
         public static IEnumerable<object[]> GetUnaryOperatorPairsData()

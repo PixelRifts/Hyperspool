@@ -80,6 +80,8 @@ namespace Hyperspool
                 case SyntaxKind.SlashToken: return "/";
                 case SyntaxKind.OpenParenthesisToken: return "(";
                 case SyntaxKind.CloseParenthesisToken: return ")";
+                case SyntaxKind.OpenBraceToken: return "{";
+                case SyntaxKind.CloseBraceToken: return "}";
                 case SyntaxKind.BangToken: return "!";
                 case SyntaxKind.AmpersandAmpersandToken: return "&&";
                 case SyntaxKind.PipePipeToken: return "||";

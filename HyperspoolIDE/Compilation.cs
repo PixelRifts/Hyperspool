@@ -49,7 +49,7 @@ namespace Hyperspool
             if (_diagnostics.Any())
                 return new EvaluationResult(_diagnostics, null);
             
-            Evaluator _evaluator = new Evaluator(GlobalScope.Expression, _variables);
+            Evaluator _evaluator = new Evaluator(GlobalScope.Statement, _variables);
             var value = _evaluator.Evaluate();
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }

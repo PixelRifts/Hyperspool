@@ -47,7 +47,7 @@ namespace Hyperspool
                                 ConsoleWrite("#mem: ", ConsoleColor.Yellow);
                                 ConsoleWrite("Shows variables stored in memory and their values", ConsoleColor.DarkGreen);
                                 Console.WriteLine();
-                                ConsoleWrite("#clrscp: ", ConsoleColor.Yellow);
+                                ConsoleWrite("#clrmem: ", ConsoleColor.Yellow);
                                 ConsoleWrite("Clears current scope", ConsoleColor.DarkGreen);
                                 Console.WriteLine();
 
@@ -79,7 +79,7 @@ namespace Hyperspool
                                 Console.WriteLine();
                                 continue;
                                 
-                            case "#clrscp":
+                            case "#clrmem":
                                 Console.WriteLine();
                                 previous = null;
                                 ConsoleWriteLine("Cleared Scope", ConsoleColor.Magenta);

@@ -58,9 +58,38 @@ namespace Hyperspool
 
         public CompilationUnitSyntax ParseCompilationUnit()
         {
-            ExpressionSyntax expression = ParseExpression();
-            SyntaxToken endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-            return new CompilationUnitSyntax(expression, endOfFileToken);
+            var _statement = ParseStatement();
+            var _endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
+            return new CompilationUnitSyntax(_statement, _endOfFileToken);
+        }
+
+        private StatementSyntax ParseStatement()
+        {
+            if (Current.Kind == SyntaxKind.OpenBraceToken)
+                return ParseBlockStatement();
+
+            return ParseExpressionStatement();
+        }
+
+        private BlockStatementSyntax ParseBlockStatement()
+        {
+            var _statements = ImmutableArray.CreateBuilder<StatementSyntax>();
+
+            var _openBraceToken = MatchToken(SyntaxKind.OpenBraceToken);
+            while (Current.Kind != SyntaxKind.EndOfFileToken && Current.Kind != SyntaxKind.CloseBraceToken)
+            {
+                var _statement = ParseStatement();
+                _statements.Add(_statement);
+            }
+            var _closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
+
+            return new BlockStatementSyntax(_openBraceToken, _statements.ToImmutable(), _closeBraceToken);
+        }
+
+        private ExpressionStatementSyntax ParseExpressionStatement()
+        {
+            var _expression = ParseExpression();
+            return new ExpressionStatementSyntax(_expression);
         }
 
         private ExpressionSyntax ParseExpression() => ParseAssignmentExpression();

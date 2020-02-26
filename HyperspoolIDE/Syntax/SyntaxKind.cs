@@ -14,6 +14,8 @@
         SlashToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
+        OpenBraceToken,
+        CloseBraceToken,
         BangToken,
         AmpersandAmpersandToken,
         PipePipeToken,
@@ -33,7 +35,11 @@
         TrueKeyword,
         FalseKeyword,
 
-        //Misc
+        // Statements
+        BlockStatement,
+        ExpressionStatement,
+
+        // Misc
         CompilationUnit,
     }
 }

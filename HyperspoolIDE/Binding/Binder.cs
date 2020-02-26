@@ -19,7 +19,7 @@ namespace Hyperspool
         {
             var _parentScope = CreateParentScopes(_previous);
             var _binder = new Binder(_parentScope);
-            var _expression = _binder.BindExpression(_syntax.Expression);
+            var _expression = _binder.BindStatement(_syntax.Statement);
             var _variables = _binder.scope.GetDeclaredVariables();
             var _diagnostics = _binder.Diagnostics.ToImmutableArray();
 
@@ -53,6 +53,33 @@ namespace Hyperspool
         }
 
         public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
+
+        private BoundStatement BindStatement(StatementSyntax _syntax)
+        {
+            switch (_syntax.Kind)
+            {
+                case SyntaxKind.BlockStatement: return BindBlockStatement((BlockStatementSyntax)_syntax);
+                case SyntaxKind.ExpressionStatement: return BindExpressionStatement((ExpressionStatementSyntax)_syntax);
+                default: throw new Exception($"Unexpected Syntax: {_syntax.Kind}");
+            }
+        }
+
+        private BoundExpressionStatement BindExpressionStatement(ExpressionStatementSyntax _syntax)
+        {
+            var _expression = BindExpression(_syntax.Expression);
+            return new BoundExpressionStatement(_expression);
+        }
+
+        private BoundBlockStatement BindBlockStatement(BlockStatementSyntax _syntax)
+        {
+            var _statements = ImmutableArray.CreateBuilder<BoundStatement>();
+            foreach (var _statementSyntax in _syntax.Statements)
+            {
+                var _statement = BindStatement(_statementSyntax);
+                _statements.Add(_statement);
+            }
+            return new BoundBlockStatement(_statements.ToImmutable());
+        }
 
         public BoundExpression BindExpression(ExpressionSyntax _syntax)
         {
