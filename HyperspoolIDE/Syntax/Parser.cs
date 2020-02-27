@@ -65,10 +65,18 @@ namespace Hyperspool
 
         private StatementSyntax ParseStatement()
         {
-            if (Current.Kind == SyntaxKind.OpenBraceToken)
-                return ParseBlockStatement();
+            switch (Current.Kind)
+            {
+                case SyntaxKind.OpenBraceToken:
+                    return ParseBlockStatement();
 
-            return ParseExpressionStatement();
+                case SyntaxKind.LetKeyword:
+                case SyntaxKind.VarKeyword:
+                    return ParseVariableDeclaration();
+
+                default:
+                    return ParseExpressionStatement();
+            }
         }
 
         private BlockStatementSyntax ParseBlockStatement()
@@ -84,6 +92,16 @@ namespace Hyperspool
             var _closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
 
             return new BlockStatementSyntax(_openBraceToken, _statements.ToImmutable(), _closeBraceToken);
+        }
+
+        private VariableDeclarationSyntax ParseVariableDeclaration()
+        {
+            var _expected = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword: SyntaxKind.VarKeyword;
+            var _keyword = MatchToken(_expected);
+            var _identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var _equals = MatchToken(SyntaxKind.EqualsToken);
+            var _initializer = ParseExpression();
+            return new VariableDeclarationSyntax(_keyword, _identifier, _equals, _initializer);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()

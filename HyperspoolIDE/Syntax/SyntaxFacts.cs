@@ -65,6 +65,8 @@ namespace Hyperspool
             {
                 case "true": return SyntaxKind.TrueKeyword;
                 case "false": return SyntaxKind.FalseKeyword;
+                case "let": return SyntaxKind.LetKeyword;
+                case "var": return SyntaxKind.VarKeyword;
                 default: return SyntaxKind.IdentifierToken;
             }
         }
@@ -89,6 +91,8 @@ namespace Hyperspool
                 case SyntaxKind.BangEqualsToken: return "!=";
                 case SyntaxKind.TrueKeyword: return "true";
                 case SyntaxKind.FalseKeyword: return "false";
+                case SyntaxKind.LetKeyword: return "let";
+                case SyntaxKind.VarKeyword: return "var";
                 default: return null;
             }
         }

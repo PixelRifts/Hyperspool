@@ -32,9 +32,19 @@ namespace Hyperspool
                 case BoundNodeKind.ExpressionStatement:
                     EvaluateExpressionStatement((BoundExpressionStatement)_node);
                     break;
+                case BoundNodeKind.VariableDeclaration:
+                    EvaluateVariableDeclaration((BoundVariableDeclaration)_node);
+                    break;
                 default:
                     throw new Exception($"Unexpected Node {_node.Kind}");
             }
+        }
+
+        private void EvaluateVariableDeclaration(BoundVariableDeclaration _node)
+        {
+            var _value = EvaluateExpression(_node.Initializer);
+            variables[_node.Variable] = _value;
+            lastValue = _value;
         }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement _node)

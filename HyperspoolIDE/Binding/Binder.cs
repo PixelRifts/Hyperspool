@@ -60,6 +60,7 @@ namespace Hyperspool
             {
                 case SyntaxKind.BlockStatement: return BindBlockStatement((BlockStatementSyntax)_syntax);
                 case SyntaxKind.ExpressionStatement: return BindExpressionStatement((ExpressionStatementSyntax)_syntax);
+                case SyntaxKind.VariableDeclarationStatement: return BindVariableDeclaration((VariableDeclarationSyntax)_syntax);
                 default: throw new Exception($"Unexpected Syntax: {_syntax.Kind}");
             }
         }
@@ -70,14 +71,29 @@ namespace Hyperspool
             return new BoundExpressionStatement(_expression);
         }
 
+        private BoundVariableDeclaration BindVariableDeclaration(VariableDeclarationSyntax _syntax)
+        {
+            var _name = _syntax.Identifier.Text;
+            var _isReadOnly = _syntax.KeywordToken.Kind == SyntaxKind.LetKeyword;
+            var _expression = BindExpression(_syntax.Initializer);
+            var _variable = new VariableSymbol(_name, _isReadOnly, _expression.Type);
+
+            if (!scope.TryDeclare(_variable))
+                Diagnostics.ReportVariableAlreadyDeclared(_syntax.Identifier.Span, _name);
+
+            return new BoundVariableDeclaration(_variable, _expression);
+        }
+
         private BoundBlockStatement BindBlockStatement(BlockStatementSyntax _syntax)
         {
             var _statements = ImmutableArray.CreateBuilder<BoundStatement>();
+            scope = new BoundScope(scope);
             foreach (var _statementSyntax in _syntax.Statements)
             {
                 var _statement = BindStatement(_statementSyntax);
                 _statements.Add(_statement);
             }
+            scope = scope.Parent;
             return new BoundBlockStatement(_statements.ToImmutable());
         }
 
@@ -115,8 +131,13 @@ namespace Hyperspool
 
             if (!scope.TryLookup(_name, out var _variable))
             {
-                _variable = new VariableSymbol(_name, _boundExpression.Type);
-                scope.TryDeclare(_variable);
+                Diagnostics.ReportUndefinedName(_syntax.IdentifierToken.Span, _name);
+                return _boundExpression;
+            }
+
+            if (_variable.IsReadOnly)
+            {
+                Diagnostics.ReportCannotAssign(_syntax.EqualsToken.Span, _name);
             }
 
             if (_boundExpression.Type != _variable.Type)

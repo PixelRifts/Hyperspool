@@ -34,10 +34,13 @@
         // Keywords
         TrueKeyword,
         FalseKeyword,
+        LetKeyword,
+        VarKeyword,
 
         // Statements
         BlockStatement,
         ExpressionStatement,
+        VariableDeclarationStatement,
 
         // Misc
         CompilationUnit,

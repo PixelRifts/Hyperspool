@@ -65,5 +65,17 @@ namespace Hyperspool
             var _msg = $"ERROR: Cannot convert type '{_fromType}' to '{_toType}'";
             Report(_span, _msg);
         }
+
+        public void ReportVariableAlreadyDeclared(TextSpan _span, string _name)
+        {
+            var _msg = $"Variable {_name} has been already declared";
+            Report(_span, _msg);
+        }
+
+        public void ReportCannotAssign(TextSpan _span, string _name)
+        {
+            var _msg = $"Variable {_name} is Read-only and cannot be assigned";
+            Report(_span, _msg);
+        }
     }
 }
