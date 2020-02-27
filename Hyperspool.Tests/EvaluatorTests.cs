@@ -15,7 +15,7 @@ namespace Hyperspool.Tests
         [InlineData("4 * 2", 8)]
         [InlineData("9 / 3", 3)]
         [InlineData("(10)", 10)]
-        [InlineData("(a = 10) * a", 100)]
+        [InlineData("{ var a = 0 (a = 10) * a }", 100)]
         
         [InlineData("12 == 12", true)]
         [InlineData("12 == 13", false)]
