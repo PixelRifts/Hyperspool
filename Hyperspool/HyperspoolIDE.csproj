@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <ApplicationIcon />
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <StartupObject>Hyperspool.HyperstringConsole</StartupObject>
     <RootNamespace>Hyperspool</RootNamespace>
     <AssemblyName>HyperspoolIDE</AssemblyName>
